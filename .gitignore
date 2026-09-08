@@ -1,3 +1,10 @@
 .venv/
 __pycache__/
 *.pyc
+.tools/
+*.egg-info/
+labs/**/.terraform/
+labs/**/.terraform.lock.hcl
+labs/**/*.tfstate
+labs/**/*.tfstate.*
+labs/**/localstack_providers_override.tf
