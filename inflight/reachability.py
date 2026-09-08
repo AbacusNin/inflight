@@ -21,6 +21,8 @@ def permitted_edges(model: EnvironmentModel) -> list[NetworkEdge]:
     for rule in model.sg_rules.values():
         if rule.direction != "ingress":
             continue
+        if rule.from_port != rule.to_port:
+            continue  # v1 does not model ranged rules; a change on one routes to insufficient-data
         dsts = _resources_with_sg(model, rule.sg_id)
         if rule.ref_sg_id:
             srcs = _resources_with_sg(model, rule.ref_sg_id)

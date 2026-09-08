@@ -15,3 +15,8 @@ def test_reachable_true_then_false_after_rule_gone():
     assert reachable(env, "i-app", "rds-app", "tcp", 5432) is True
     env.sg_rules.clear()
     assert reachable(env, "i-app", "rds-app", "tcp", 5432) is False
+
+
+def test_ranged_rule_produces_no_edge():
+    env = load_from_file("tests/fixtures/ranged_rule.json")
+    assert permitted_edges(env) == []

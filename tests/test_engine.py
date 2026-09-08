@@ -21,3 +21,9 @@ def test_egress_rule_removal_never_safe():
     env = load_from_file("tests/fixtures/egress_only.json")
     out = evaluate(env, Change(kind="remove_sg_rules", rule_ids=("e1",)))
     assert out.verdict is not Verdict.SAFE
+
+
+def test_ranged_rule_change_never_safe():
+    env = load_from_file("tests/fixtures/ranged_rule.json")
+    out = evaluate(env, Change(kind="remove_sg_rules", rule_ids=("r1",)))
+    assert out.verdict is not Verdict.SAFE
