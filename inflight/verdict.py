@@ -14,9 +14,14 @@ def decide(findings: list[Finding]) -> VerdictResult:
             verdict = Verdict.NEEDS_REVIEW
             if f.classification is Classification.INSUFFICIENT_DATA:
                 reasons.append(f"needs review: {loc} could not be analyzed ({f.evidence})")
+            elif not f.evidence.get("flow_logs_enabled", True):
+                reasons.append(
+                    f"needs review: {loc} has no usage evidence, flow logs are disabled, "
+                    f"so it cannot be cleared ({f.evidence})")
             else:
                 reasons.append(
-                    f"needs review: {loc} looks unused but the window is too short to be sure ({f.evidence})")
+                    f"needs review: {loc} looks unused but the observation window is too short "
+                    f"to be sure ({f.evidence})")
     if not reasons:
         reasons.append("safe: no used sole paths affected")
     return VerdictResult(verdict=verdict, findings=tuple(findings), reasons=tuple(reasons))

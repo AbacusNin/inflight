@@ -35,3 +35,15 @@ def test_insufficient_data_needs_review():
     f = Finding(edge=None, classification=Classification.INSUFFICIENT_DATA,
                 confidence="low", evidence={})
     assert decide([f]).verdict is Verdict.NEEDS_REVIEW
+
+
+def test_dead_uncertain_reason_distinguishes_no_flow_logs_from_short_window():
+    e = NetworkEdge("a", "b", "tcp", 5432, "r1")
+    no_logs = Finding(edge=e, classification=Classification.DEAD_UNCERTAIN, confidence="low",
+                      evidence={"flow_logs_enabled": False, "window_days": 90.0})
+    short = Finding(edge=e, classification=Classification.DEAD_UNCERTAIN, confidence="low",
+                    evidence={"flow_logs_enabled": True, "window_days": 3.0})
+    r_no_logs = decide([no_logs]).reasons[0]
+    r_short = decide([short]).reasons[0]
+    assert "flow logs are disabled" in r_no_logs
+    assert "too short" in r_short and "flow logs are disabled" not in r_short
