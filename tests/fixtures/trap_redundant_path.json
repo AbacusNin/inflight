@@ -1,0 +1,18 @@
+{
+  "resources": [
+    {"id": "rds-app", "type": "rds", "vpc_id": "vpc-1", "attrs": {"sg_ids": ["sg-db"]}},
+    {"id": "i-app", "type": "instance", "vpc_id": "vpc-1", "attrs": {"sg_ids": ["sg-app"]}}
+  ],
+  "sg_rules": [
+    {"rule_id": "r1", "sg_id": "sg-db", "direction": "ingress", "protocol": "tcp",
+     "from_port": 5432, "to_port": 5432, "ref_sg_id": "sg-app"},
+    {"rule_id": "r2", "sg_id": "sg-db", "direction": "ingress", "protocol": "tcp",
+     "from_port": 5432, "to_port": 5432, "ref_sg_id": "sg-app"}
+  ],
+  "enis": {}, "routes": {}, "nacls": {},
+  "usage": [
+    {"src": "i-app", "dst": "rds-app", "protocol": "tcp", "port": 5432,
+     "flow_count": 800, "first_seen": "2026-06-01T00:00:00Z", "last_seen": "2026-08-30T00:00:00Z"}
+  ],
+  "window_days": 90.0, "flow_logs_enabled": true
+}
