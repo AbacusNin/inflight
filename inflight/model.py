@@ -66,11 +66,12 @@ class Classification(Enum):
     DEAD_UNCERTAIN = "dead_uncertain"
     LIVE_REDUNDANT = "live_redundant"
     LIVE_SOLE = "live_sole"
+    INSUFFICIENT_DATA = "insufficient_data"
 
 
 @dataclass(frozen=True)
 class Finding:
-    edge: NetworkEdge
+    edge: "NetworkEdge | None"
     classification: Classification
     confidence: str      # "high" | "low"
     evidence: dict

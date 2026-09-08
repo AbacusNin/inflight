@@ -31,4 +31,15 @@ def classify_edge(pre, post, edge, thresholds) -> Finding:
 
 def analyze(pre: EnvironmentModel, change: Change, thresholds: Thresholds) -> list[Finding]:
     post = apply_change(pre, change)
-    return [classify_edge(pre, post, e, thresholds) for e in affected_edges(pre, change)]
+    edges = affected_edges(pre, change)
+    findings = [classify_edge(pre, post, e, thresholds) for e in edges]
+    modeled = {e.via_rule_id for e in edges}
+    unmodeled = [rid for rid in change.rule_ids if rid not in modeled]
+    if unmodeled:
+        findings.append(Finding(
+            edge=None,
+            classification=Classification.INSUFFICIENT_DATA,
+            confidence="low",
+            evidence={"unmodeled_rule_ids": unmodeled,
+                      "reason": "change references rules with no modeled ingress impact; cannot prove safe"}))
+    return findings

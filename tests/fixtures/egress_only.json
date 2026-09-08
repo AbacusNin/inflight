@@ -1,0 +1,12 @@
+{
+  "resources": [
+    {"id": "i-app", "type": "instance", "vpc_id": "vpc-1", "attrs": {"sg_ids": ["sg-app"]}}
+  ],
+  "sg_rules": [
+    {"rule_id": "e1", "sg_id": "sg-app", "direction": "egress", "protocol": "tcp",
+     "from_port": 443, "to_port": 443, "cidr": "0.0.0.0/0"}
+  ],
+  "enis": {}, "routes": {}, "nacls": {},
+  "usage": [],
+  "window_days": 90.0, "flow_logs_enabled": true
+}

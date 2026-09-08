@@ -29,3 +29,9 @@ def test_block_wins_over_needs_review_either_order():
     uncertain = _f(Classification.DEAD_UNCERTAIN, "low")
     assert decide([sole, uncertain]).verdict is Verdict.BLOCK
     assert decide([uncertain, sole]).verdict is Verdict.BLOCK
+
+
+def test_insufficient_data_needs_review():
+    f = Finding(edge=None, classification=Classification.INSUFFICIENT_DATA,
+                confidence="low", evidence={})
+    assert decide([f]).verdict is Verdict.NEEDS_REVIEW

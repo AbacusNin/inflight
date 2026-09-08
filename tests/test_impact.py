@@ -23,3 +23,11 @@ def test_unused_with_short_window_is_dead_uncertain():
     findings = analyze(env, Change(kind="remove_sg_rules", rule_ids=("r1",)), Thresholds())
     assert findings[0].classification is Classification.DEAD_UNCERTAIN
     assert findings[0].confidence == "low"
+
+
+def test_unknown_rule_id_is_insufficient_data():
+    env = load_from_file("tests/fixtures/minimal.json")
+    findings = analyze(env, Change(kind="remove_sg_rules", rule_ids=("nope",)), Thresholds())
+    assert len(findings) == 1
+    assert findings[0].classification is Classification.INSUFFICIENT_DATA
+    assert findings[0].edge is None
