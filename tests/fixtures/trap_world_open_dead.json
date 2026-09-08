@@ -1,0 +1,12 @@
+{
+  "resources": [
+    {"id": "i-web", "type": "instance", "vpc_id": "vpc-1", "attrs": {"sg_ids": ["sg-ssh"]}}
+  ],
+  "sg_rules": [
+    {"rule_id": "r1", "sg_id": "sg-ssh", "direction": "ingress", "protocol": "tcp",
+     "from_port": 22, "to_port": 22, "cidr": "0.0.0.0/0"}
+  ],
+  "enis": {}, "routes": {}, "nacls": {},
+  "usage": [],
+  "window_days": 90.0, "flow_logs_enabled": true
+}

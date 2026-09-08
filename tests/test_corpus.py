@@ -7,6 +7,8 @@ CASES = [
     ("tests/fixtures/trap_sole_path.json", Verdict.BLOCK),
     ("tests/fixtures/trap_infrequent_job.json", Verdict.NEEDS_REVIEW),
     ("tests/fixtures/trap_redundant_path.json", Verdict.SAFE),
+    ("tests/fixtures/trap_world_open_live.json", Verdict.BLOCK),
+    ("tests/fixtures/trap_world_open_dead.json", Verdict.SAFE),
 ]
 
 

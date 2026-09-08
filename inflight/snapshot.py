@@ -18,4 +18,5 @@ def load_from_file(path: str) -> EnvironmentModel:
         usage=usage,
         window_days=raw["window_days"],
         flow_logs_enabled=raw["flow_logs_enabled"],
+        ip_to_resource=raw.get("ip_to_resource", {}),
     )
