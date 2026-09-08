@@ -22,3 +22,10 @@ def test_all_safe_classes_are_safe():
 
 def test_empty_findings_is_safe():
     assert decide([]).verdict is Verdict.SAFE
+
+
+def test_block_wins_over_needs_review_either_order():
+    sole = _f(Classification.LIVE_SOLE)
+    uncertain = _f(Classification.DEAD_UNCERTAIN, "low")
+    assert decide([sole, uncertain]).verdict is Verdict.BLOCK
+    assert decide([uncertain, sole]).verdict is Verdict.BLOCK
