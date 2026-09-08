@@ -1,0 +1,34 @@
+from inflight.model import (
+    Change, Classification, EnvironmentModel, Finding, NetworkEdge, Thresholds,
+)
+from inflight.reachability import permitted_edges, reachable
+from inflight.change import apply_change
+from inflight.usage import is_used
+
+
+def affected_edges(pre: EnvironmentModel, change: Change) -> list[NetworkEdge]:
+    return [e for e in permitted_edges(pre) if e.via_rule_id in change.rule_ids]
+
+
+def classify_edge(pre, post, edge, thresholds) -> Finding:
+    used = is_used(pre, edge, thresholds)
+    survives = reachable(post, edge.src, edge.dst, edge.protocol, edge.port)
+    if used:
+        cls = Classification.LIVE_REDUNDANT if survives else Classification.LIVE_SOLE
+        conf = "high"
+    elif pre.flow_logs_enabled and pre.window_days >= thresholds.window_days_high_confidence:
+        cls, conf = Classification.DEAD, "high"
+    else:
+        cls, conf = Classification.DEAD_UNCERTAIN, "low"
+    evidence = {
+        "used": used,
+        "survives_post_change": survives,
+        "window_days": pre.window_days,
+        "flow_logs_enabled": pre.flow_logs_enabled,
+    }
+    return Finding(edge=edge, classification=cls, confidence=conf, evidence=evidence)
+
+
+def analyze(pre: EnvironmentModel, change: Change, thresholds: Thresholds) -> list[Finding]:
+    post = apply_change(pre, change)
+    return [classify_edge(pre, post, e, thresholds) for e in affected_edges(pre, change)]
