@@ -2,6 +2,8 @@
 name = "inflight"
 version = "0.1.0"
 requires-python = ">=3.14"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
 dependencies = ["boto3>=1.43", "opentelemetry-sdk>=1.27"]
 
 [project.optional-dependencies]
