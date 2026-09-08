@@ -34,3 +34,12 @@ def test_cli_usage_error_exits_1():
     with pytest.raises(SystemExit) as exc:
         main(["evaluate", "--snapshot", "tests/fixtures/trap_sole_path.json"])
     assert exc.value.code == 1
+
+
+def test_cli_writes_ledger(tmp_path):
+    from inflight.ledger import Ledger
+    led = tmp_path / "l.jsonl"
+    main(["evaluate", "--snapshot", "tests/fixtures/trap_sole_path.json",
+          "--change", "tests/fixtures/change_remove_r1.json", "--ledger", str(led)])
+    assert led.exists()
+    assert Ledger(str(led)).verify() is True

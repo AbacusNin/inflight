@@ -19,3 +19,7 @@ def test_tamper_breaks_verification(tmp_path):
     rec["entry"]["verdict"] = "safe"
     p.write_text(json.dumps(rec) + "\n")
     assert Ledger(str(p)).verify() is False
+
+
+def test_verify_true_on_missing_file(tmp_path):
+    assert Ledger(str(tmp_path / "nope.jsonl")).verify() is True

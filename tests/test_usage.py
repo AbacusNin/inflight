@@ -40,3 +40,9 @@ def test_is_used_matches_cidr_edge_by_membership():
     assert is_used(env, edge, Thresholds()) is True
     edge2 = NetworkEdge(src="10.0.0.0/8", dst="i-web", protocol="tcp", port=22, via_rule_id="r2")
     assert is_used(env, edge2, Thresholds()) is False
+
+
+def test_cidr_edge_ignores_resource_id_usage_src():
+    edge = NetworkEdge(src="0.0.0.0/0", dst="i-web", protocol="tcp", port=22, via_rule_id="r1")
+    env = _env([UsageRecord("i-app", "i-web", "tcp", 22, 9, "s", "e")])
+    assert is_used(env, edge, Thresholds()) is False

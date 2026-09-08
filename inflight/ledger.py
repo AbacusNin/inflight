@@ -30,6 +30,8 @@ class Ledger:
         return h
 
     def verify(self) -> bool:
+        if not os.path.exists(self.path):
+            return True
         prev = ""
         with open(self.path, encoding="utf-8") as fh:
             for line in fh:

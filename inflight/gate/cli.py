@@ -29,6 +29,7 @@ def main(argv: list[str] | None = None) -> int:
     ev = sub.add_parser("evaluate")
     ev.add_argument("--snapshot", required=True)
     ev.add_argument("--change", required=True)
+    ev.add_argument("--ledger")
     args = parser.parse_args(argv)
 
     try:
@@ -39,5 +40,15 @@ def main(argv: list[str] | None = None) -> int:
         print(f"error: {exc}", file=sys.stderr)
         return 3  # fail closed
     report = {"verdict": result.verdict.value, "reasons": list(result.reasons)}
+    if args.ledger:
+        from datetime import datetime, timezone
+        from inflight.ledger import Ledger
+        Ledger(args.ledger).append({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "snapshot": args.snapshot,
+            "change": args.change,
+            "verdict": result.verdict.value,
+            "reasons": list(result.reasons),
+        })
     print(json.dumps(report, indent=2))
     return _EXIT[result.verdict]
