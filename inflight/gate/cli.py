@@ -9,6 +9,13 @@ from inflight.engine import evaluate
 _EXIT = {Verdict.SAFE: 0, Verdict.NEEDS_REVIEW: 2, Verdict.BLOCK: 3}
 
 
+class _Parser(argparse.ArgumentParser):
+    def error(self, message):
+        self.print_usage(sys.stderr)
+        print(f"error: {message}", file=sys.stderr)
+        raise SystemExit(1)
+
+
 def _load_change(path: str) -> Change:
     with open(path, encoding="utf-8") as fh:
         raw = json.load(fh)
@@ -17,8 +24,8 @@ def _load_change(path: str) -> Change:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="inflight")
-    sub = parser.add_subparsers(dest="command", required=True)
+    parser = _Parser(prog="inflight")
+    sub = parser.add_subparsers(dest="command", required=True, parser_class=_Parser)
     ev = sub.add_parser("evaluate")
     ev.add_argument("--snapshot", required=True)
     ev.add_argument("--change", required=True)
@@ -28,7 +35,7 @@ def main(argv: list[str] | None = None) -> int:
         env = load_from_file(args.snapshot)
         change = _load_change(args.change)
         result = evaluate(env, change)
-    except (OSError, KeyError, ValueError) as exc:
+    except (OSError, KeyError, ValueError, TypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 3  # fail closed
     report = {"verdict": result.verdict.value, "reasons": list(result.reasons)}
