@@ -19,6 +19,7 @@ def test_load_from_aws_maps_security_groups():
                       {"Filters": [{"Name": "vpc-id", "Values": ["vpc-1"]}]})
     stub.add_response("describe_network_interfaces", {"NetworkInterfaces": []},
                       {"Filters": [{"Name": "vpc-id", "Values": ["vpc-1"]}]})
+    stub.add_response("describe_vpcs", {"Vpcs": []}, {"VpcIds": ["vpc-1"]})
     stub.activate()
 
     class Sess:

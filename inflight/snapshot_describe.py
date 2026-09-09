@@ -2,6 +2,7 @@ import glob
 import json
 import os
 
+from inflight.flowlogs import build_ip_to_resource, vpc_cidrs_from
 from inflight.model import EnvironmentModel, Resource, SGRule
 
 
@@ -24,7 +25,7 @@ def _rules_from_group(group: dict) -> list[SGRule]:
 
 
 def build_model_from_describe(groups, reservations, enis, window_days,
-                              vpc_id="") -> EnvironmentModel:
+                              vpc_id="", vpcs=None) -> EnvironmentModel:
     sg_rules = {}
     for g in groups:
         for rule in _rules_from_group(g):
@@ -43,7 +44,9 @@ def build_model_from_describe(groups, reservations, enis, window_days,
             "subnet_id": eni.get("SubnetId")}
     return EnvironmentModel(resources=resources, sg_rules=sg_rules, enis=eni_map,
                             routes={}, nacls={}, usage=[], window_days=window_days,
-                            flow_logs_enabled=False)
+                            flow_logs_enabled=False,
+                            ip_to_resource=build_ip_to_resource(reservations, enis),
+                            vpc_cidrs=vpc_cidrs_from(vpcs or []))
 
 
 def _read_all(root: str, filename: str, key: str) -> list:
@@ -63,4 +66,5 @@ def load_from_describe_dir(path: str, window_days: float) -> EnvironmentModel:
     groups = _read_all(path, "SecurityGroups.json", "SecurityGroups")
     reservations = _read_all(path, "Reservations.json", "Reservations")
     enis = _read_all(path, "NetworkInterfaces.json", "NetworkInterfaces")
-    return build_model_from_describe(groups, reservations, enis, window_days)
+    vpcs = _read_all(path, "Vpcs.json", "Vpcs")
+    return build_model_from_describe(groups, reservations, enis, window_days, vpcs=vpcs)

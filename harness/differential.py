@@ -3,6 +3,7 @@ import json
 import os
 import tempfile
 
+from inflight.flowlogs import build_ip_to_resource
 from inflight.model import Change
 from inflight.snapshot_describe import load_from_describe_dir
 from harness.change_on_snapshot import write_after_dir
@@ -15,31 +16,14 @@ def ip_to_instance(before_dir: str) -> dict:
     """Map every private and public IP in the snapshot to its instance id, so
     Batfish's IP-addressed destinations can be compared with Inflight's
     instance-id paths."""
-    out = {}
+    reservations, enis = [], []
     for path in glob.glob(os.path.join(before_dir, "**", "Reservations.json"), recursive=True):
         with open(path, encoding="utf-8") as fh:
-            data = json.load(fh)
-        for res in data.get("Reservations", []):
-            for inst in res.get("Instances", []):
-                iid = inst["InstanceId"]
-                for key in ("PrivateIpAddress", "PublicIpAddress"):
-                    if inst.get(key):
-                        out[inst[key]] = iid
-                for ni in inst.get("NetworkInterfaces", []):
-                    for pip in ni.get("PrivateIpAddresses", []):
-                        if pip.get("PrivateIpAddress"):
-                            out[pip["PrivateIpAddress"]] = iid
+            reservations.extend(json.load(fh).get("Reservations", []))
     for path in glob.glob(os.path.join(before_dir, "**", "NetworkInterfaces.json"), recursive=True):
         with open(path, encoding="utf-8") as fh:
-            data = json.load(fh)
-        for eni in data.get("NetworkInterfaces", []):
-            iid = eni.get("Attachment", {}).get("InstanceId")
-            if not iid:
-                continue
-            for pip in eni.get("PrivateIpAddresses", []):
-                if pip.get("PrivateIpAddress"):
-                    out[pip["PrivateIpAddress"]] = iid
-    return out
+            enis.extend(json.load(fh).get("NetworkInterfaces", []))
+    return build_ip_to_resource(reservations, enis)
 
 
 def normalize_batfish(raw: set, ip_map: dict) -> set:
