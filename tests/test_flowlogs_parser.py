@@ -30,6 +30,20 @@ def test_parse_custom_uses_field_list_and_pkt_addrs():
     assert recs[0]["srcaddr"] == "10.0.1.10" and recs[0]["dstaddr"] == "10.0.1.20"
 
 
+def test_parse_custom_falls_back_when_pkt_srcaddr_is_dash():
+    # A v5 custom log that lists pkt-srcaddr but emits "-" (unavailable, not NAT'd)
+    # must not corrupt srcaddr to "-" -- that would drop the flow from usage
+    # matching and turn a used path into a false safe.
+    fields = ["srcaddr", "dstaddr", "protocol", "dstport", "start", "end",
+              "action", "log-status", "pkt-srcaddr", "pkt-dstaddr"]
+    line = "3.3.3.3 1.1.1.1 6 5432 1690000000 1690000060 ACCEPT OK - -"
+    recs = parse_custom([line], fields)
+    assert recs[0]["srcaddr"] == "3.3.3.3"
+    assert recs[0]["srcaddr"] != "-"
+    assert recs[0]["dstaddr"] == "1.1.1.1"
+    assert recs[0]["dstaddr"] != "-"
+
+
 def _flowlogs_reader_available() -> bool:
     try:
         import flowlogs_reader  # noqa: F401

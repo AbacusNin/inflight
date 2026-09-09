@@ -45,6 +45,16 @@ def parse_v2(lines: list) -> list:
     return parse_custom(lines, _V2_FIELDS)
 
 
+def _pkt(rec: dict, key: str, fallback: str) -> str:
+    """Resolve a pkt-* override, falling back when the field is absent or the
+    literal "-" placeholder VPC Flow Logs emit for an unavailable value. Without
+    this, a v5 custom log that lists pkt-srcaddr/pkt-dstaddr but emits "-" for a
+    non-NAT'd OK flow would corrupt srcaddr/dstaddr to "-", dropping the flow from
+    usage matching and turning a used path into a false safe (fail-open)."""
+    v = rec.get(key)
+    return v if v and v != "-" else fallback
+
+
 def parse_custom(lines: list, fields: list) -> list:
     """Parse Flow Log lines given the field order. Drops NODATA/SKIPDATA rows and
     portless (ICMP) rows; raises on a row whose field count does not match `fields`
@@ -61,12 +71,12 @@ def parse_custom(lines: list, fields: list) -> list:
         rec = {name: parts[i] for name, i in idx.items()}
         if rec.get("log-status", "OK") != "OK":
             continue
-        dstport = rec.get("pkt-dstport") or rec.get("dstport", "-")
+        dstport = rec.get("dstport", "-")
         if not str(dstport).isdigit():
             continue  # portless (ICMP) flow cannot match a port-scoped edge
         out.append({
-            "srcaddr": rec.get("pkt-srcaddr") or rec["srcaddr"],
-            "dstaddr": rec.get("pkt-dstaddr") or rec["dstaddr"],
+            "srcaddr": _pkt(rec, "pkt-srcaddr", rec["srcaddr"]),
+            "dstaddr": _pkt(rec, "pkt-dstaddr", rec["dstaddr"]),
             "protocol": rec["protocol"],
             "dstport": int(dstport),
             "start": int(rec["start"]),
