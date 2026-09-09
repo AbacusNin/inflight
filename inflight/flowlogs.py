@@ -114,3 +114,40 @@ def resolve_with_completeness(model, records: list) -> tuple:
             complete = False
             break
     return resolve_flow_logs(model, records), complete
+
+
+def discover_flow_logs(session, vpc_id: str) -> list:
+    """Find the ACTIVE flow logs covering a VPC and where they deliver."""
+    ec2 = session.client("ec2")
+    resp = ec2.describe_flow_logs(
+        Filters=[{"Name": "resource-id", "Values": [vpc_id]}])
+    out = []
+    for fl in resp.get("FlowLogs", []):
+        if fl.get("FlowLogStatus") not in (None, "ACTIVE"):
+            continue
+        dest = fl.get("LogDestinationType", "cloud-watch-logs")
+        entry = {"destination_type": dest, "creation_time": fl.get("CreationTime"),
+                 "log_format": fl.get("LogFormat")}  # None for the default v2 format
+        if dest == "cloud-watch-logs":
+            entry["log_group"] = fl.get("LogGroupName")
+        else:
+            target = fl.get("LogDestination", "")  # arn:aws:s3:::bucket/prefix
+            tail = target.split(":::", 1)[-1]
+            bucket, _, prefix = tail.partition("/")
+            entry["bucket"], entry["prefix"] = bucket, prefix
+        out.append(entry)
+    return out
+
+
+def fetch_cloudwatch(session, log_group: str, start_ms: int, end_ms: int) -> list:
+    logs = session.client("logs")
+    lines, token = [], None
+    while True:
+        kw = {"logGroupName": log_group, "startTime": start_ms, "endTime": end_ms}
+        if token:
+            kw["nextToken"] = token
+        resp = logs.filter_log_events(**kw)
+        lines.extend(e["message"].strip() for e in resp.get("events", []))
+        token = resp.get("nextToken")
+        if not token:
+            return lines
