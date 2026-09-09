@@ -1,0 +1,48 @@
+{
+ "NetworkAcls": [
+  {
+   "Associations": [
+    {
+     "NetworkAclAssociationId": "aclassoc-tt0000000000001",
+     "NetworkAclId": "acl-tt0001",
+     "SubnetId": "subnet-tt0001"
+    }
+   ],
+   "Entries": [
+    {
+     "CidrBlock": "0.0.0.0/0",
+     "Egress": true,
+     "Protocol": "-1",
+     "RuleAction": "allow",
+     "RuleNumber": 100
+    },
+    {
+     "CidrBlock": "0.0.0.0/0",
+     "Egress": true,
+     "Protocol": "-1",
+     "RuleAction": "deny",
+     "RuleNumber": 32767
+    },
+    {
+     "CidrBlock": "0.0.0.0/0",
+     "Egress": false,
+     "Protocol": "-1",
+     "RuleAction": "allow",
+     "RuleNumber": 100
+    },
+    {
+     "CidrBlock": "0.0.0.0/0",
+     "Egress": false,
+     "Protocol": "-1",
+     "RuleAction": "deny",
+     "RuleNumber": 32767
+    }
+   ],
+   "IsDefault": true,
+   "NetworkAclId": "acl-tt0001",
+   "OwnerId": "123456789012",
+   "Tags": [],
+   "VpcId": "vpc-tt0001"
+  }
+ ]
+}

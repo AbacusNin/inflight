@@ -1,0 +1,78 @@
+{
+ "NetworkInterfaces": [
+  {
+   "Attachment": {
+    "AttachTime": "2026-01-01 00:00:00+00:00",
+    "AttachmentId": "eni-attach-tt0000000000001",
+    "DeleteOnTermination": true,
+    "DeviceIndex": 0,
+    "InstanceId": "i-app0000000000001",
+    "InstanceOwnerId": "123456789012",
+    "Status": "attached"
+   },
+   "AvailabilityZone": "us-east-1a",
+   "Description": "Primary network interface",
+   "Groups": [
+    {
+     "GroupId": "sg-app000000000001",
+     "GroupName": "app-tier"
+    }
+   ],
+   "InterfaceType": "interface",
+   "Ipv6Addresses": [],
+   "MacAddress": "0a:aa:aa:aa:aa:01",
+   "NetworkInterfaceId": "eni-app0000000000001",
+   "OwnerId": "123456789012",
+   "PrivateIpAddress": "10.0.1.10",
+   "PrivateIpAddresses": [
+    {
+     "Primary": true,
+     "PrivateIpAddress": "10.0.1.10"
+    }
+   ],
+   "RequesterManaged": false,
+   "SourceDestCheck": true,
+   "Status": "in-use",
+   "SubnetId": "subnet-tt0001",
+   "TagSet": [],
+   "VpcId": "vpc-tt0001"
+  },
+  {
+   "Attachment": {
+    "AttachTime": "2026-01-01 00:00:00+00:00",
+    "AttachmentId": "eni-attach-tt0000000000002",
+    "DeleteOnTermination": true,
+    "DeviceIndex": 0,
+    "InstanceId": "i-db00000000000001",
+    "InstanceOwnerId": "123456789012",
+    "Status": "attached"
+   },
+   "AvailabilityZone": "us-east-1a",
+   "Description": "Primary network interface",
+   "Groups": [
+    {
+     "GroupId": "sg-db0000000000001",
+     "GroupName": "db-tier"
+    }
+   ],
+   "InterfaceType": "interface",
+   "Ipv6Addresses": [],
+   "MacAddress": "0a:aa:aa:aa:aa:02",
+   "NetworkInterfaceId": "eni-db0000000000001",
+   "OwnerId": "123456789012",
+   "PrivateIpAddress": "10.0.1.20",
+   "PrivateIpAddresses": [
+    {
+     "Primary": true,
+     "PrivateIpAddress": "10.0.1.20"
+    }
+   ],
+   "RequesterManaged": false,
+   "SourceDestCheck": true,
+   "Status": "in-use",
+   "SubnetId": "subnet-tt0001",
+   "TagSet": [],
+   "VpcId": "vpc-tt0001"
+  }
+ ]
+}

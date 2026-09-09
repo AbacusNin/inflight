@@ -1,0 +1,11 @@
+{
+ "AvailabilityZones": [
+  {
+   "Messages": [],
+   "RegionName": "us-east-1",
+   "State": "available",
+   "ZoneId": "use1-az1",
+   "ZoneName": "us-east-1a"
+  }
+ ]
+}

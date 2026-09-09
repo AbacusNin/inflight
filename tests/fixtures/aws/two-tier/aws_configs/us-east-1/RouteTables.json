@@ -1,0 +1,27 @@
+{
+ "RouteTables": [
+  {
+   "Associations": [
+    {
+     "Main": false,
+     "RouteTableAssociationId": "rtbassoc-tt0000000000001",
+     "RouteTableId": "rtb-tt0001",
+     "SubnetId": "subnet-tt0001"
+    }
+   ],
+   "OwnerId": "123456789012",
+   "PropagatingVgws": [],
+   "RouteTableId": "rtb-tt0001",
+   "Routes": [
+    {
+     "DestinationCidrBlock": "10.0.0.0/16",
+     "GatewayId": "local",
+     "Origin": "CreateRouteTable",
+     "State": "active"
+    }
+   ],
+   "Tags": [],
+   "VpcId": "vpc-tt0001"
+  }
+ ]
+}

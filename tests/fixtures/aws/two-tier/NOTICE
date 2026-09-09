@@ -1,0 +1,14 @@
+This fixture is synthetic. It was hand-authored for the Inflight reachability
+test harness and does not represent output captured from a real AWS account.
+
+It models a minimal two-tier topology: one VPC, one subnet, two EC2
+instances (an app tier and a db tier), and exactly one security-group-to-
+security-group ingress rule (db tier, tcp/5432, sourced from the app tier's
+security group). The field shapes were copied from the vendored real AWS
+describe-* output under tests/fixtures/aws/hybrid-cloud/aws_configs/, then
+simplified and rewritten with fabricated identifiers, so it loads correctly
+under both Inflight's describe-dir loader and Batfish's AWS snapshot
+ingestion. Every VPC id, subnet id, instance id, security group id, ENI id,
+IP address, and account id in this fixture is fabricated for this purpose.
+
+Do not treat any value in this directory as real infrastructure.

@@ -1,0 +1,25 @@
+{
+ "Subnets": [
+  {
+   "AssignIpv6AddressOnCreation": false,
+   "AvailabilityZone": "us-east-1a",
+   "AvailabilityZoneId": "use1-az1",
+   "AvailableIpAddressCount": 251,
+   "CidrBlock": "10.0.1.0/24",
+   "DefaultForAz": false,
+   "Ipv6CidrBlockAssociationSet": [],
+   "MapPublicIpOnLaunch": false,
+   "OwnerId": "123456789012",
+   "State": "available",
+   "SubnetArn": "arn:aws:ec2:us-east-1:123456789012:subnet/subnet-tt0001",
+   "SubnetId": "subnet-tt0001",
+   "Tags": [
+    {
+     "Key": "Name",
+     "Value": "two-tier-subnet"
+    }
+   ],
+   "VpcId": "vpc-tt0001"
+  }
+ ]
+}

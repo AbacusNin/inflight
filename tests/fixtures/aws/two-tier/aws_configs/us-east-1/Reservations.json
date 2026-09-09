@@ -1,0 +1,212 @@
+{
+ "Reservations": [
+  {
+   "Groups": [],
+   "Instances": [
+    {
+     "AmiLaunchIndex": 0,
+     "Architecture": "x86_64",
+     "BlockDeviceMappings": [
+      {
+       "DeviceName": "/dev/sda1",
+       "Ebs": {
+        "AttachTime": "2026-01-01 00:00:00+00:00",
+        "DeleteOnTermination": true,
+        "Status": "attached",
+        "VolumeId": "vol-tt00000000000001"
+       }
+      }
+     ],
+     "CapacityReservationSpecification": {
+      "CapacityReservationPreference": "open"
+     },
+     "ClientToken": "",
+     "CpuOptions": {
+      "CoreCount": 1,
+      "ThreadsPerCore": 1
+     },
+     "EbsOptimized": false,
+     "EnaSupport": true,
+     "HibernationOptions": {
+      "Configured": false
+     },
+     "Hypervisor": "xen",
+     "ImageId": "ami-tt000000000000001",
+     "InstanceId": "i-app0000000000001",
+     "InstanceType": "t2.micro",
+     "KeyName": "two-tier-fixture",
+     "LaunchTime": "2026-01-01 00:00:00+00:00",
+     "Monitoring": {
+      "State": "disabled"
+     },
+     "NetworkInterfaces": [
+      {
+       "Attachment": {
+        "AttachTime": "2026-01-01 00:00:00+00:00",
+        "AttachmentId": "eni-attach-tt0000000000001",
+        "DeleteOnTermination": true,
+        "DeviceIndex": 0,
+        "Status": "attached"
+       },
+       "Description": "Primary network interface",
+       "Groups": [
+        {
+         "GroupId": "sg-app000000000001",
+         "GroupName": "app-tier"
+        }
+       ],
+       "InterfaceType": "interface",
+       "Ipv6Addresses": [],
+       "MacAddress": "0a:aa:aa:aa:aa:01",
+       "NetworkInterfaceId": "eni-app0000000000001",
+       "OwnerId": "123456789012",
+       "PrivateIpAddress": "10.0.1.10",
+       "PrivateIpAddresses": [
+        {
+         "Primary": true,
+         "PrivateIpAddress": "10.0.1.10"
+        }
+       ],
+       "SourceDestCheck": true,
+       "Status": "in-use",
+       "SubnetId": "subnet-tt0001",
+       "VpcId": "vpc-tt0001"
+      }
+     ],
+     "Placement": {
+      "AvailabilityZone": "us-east-1a",
+      "GroupName": "",
+      "Tenancy": "default"
+     },
+     "PrivateDnsName": "ip-10-0-1-10.ec2.internal",
+     "PrivateIpAddress": "10.0.1.10",
+     "ProductCodes": [],
+     "PublicDnsName": "",
+     "RootDeviceName": "/dev/sda1",
+     "RootDeviceType": "ebs",
+     "SecurityGroups": [
+      {
+       "GroupId": "sg-app000000000001",
+       "GroupName": "app-tier"
+      }
+     ],
+     "SourceDestCheck": true,
+     "State": {
+      "Code": 16,
+      "Name": "running"
+     },
+     "StateTransitionReason": "",
+     "SubnetId": "subnet-tt0001",
+     "VirtualizationType": "hvm",
+     "VpcId": "vpc-tt0001"
+    }
+   ],
+   "OwnerId": "123456789012",
+   "ReservationId": "r-tt000000000000001"
+  },
+  {
+   "Groups": [],
+   "Instances": [
+    {
+     "AmiLaunchIndex": 0,
+     "Architecture": "x86_64",
+     "BlockDeviceMappings": [
+      {
+       "DeviceName": "/dev/sda1",
+       "Ebs": {
+        "AttachTime": "2026-01-01 00:00:00+00:00",
+        "DeleteOnTermination": true,
+        "Status": "attached",
+        "VolumeId": "vol-tt00000000000002"
+       }
+      }
+     ],
+     "CapacityReservationSpecification": {
+      "CapacityReservationPreference": "open"
+     },
+     "ClientToken": "",
+     "CpuOptions": {
+      "CoreCount": 1,
+      "ThreadsPerCore": 1
+     },
+     "EbsOptimized": false,
+     "EnaSupport": true,
+     "HibernationOptions": {
+      "Configured": false
+     },
+     "Hypervisor": "xen",
+     "ImageId": "ami-tt000000000000001",
+     "InstanceId": "i-db00000000000001",
+     "InstanceType": "t2.micro",
+     "KeyName": "two-tier-fixture",
+     "LaunchTime": "2026-01-01 00:00:00+00:00",
+     "Monitoring": {
+      "State": "disabled"
+     },
+     "NetworkInterfaces": [
+      {
+       "Attachment": {
+        "AttachTime": "2026-01-01 00:00:00+00:00",
+        "AttachmentId": "eni-attach-tt0000000000002",
+        "DeleteOnTermination": true,
+        "DeviceIndex": 0,
+        "Status": "attached"
+       },
+       "Description": "Primary network interface",
+       "Groups": [
+        {
+         "GroupId": "sg-db0000000000001",
+         "GroupName": "db-tier"
+        }
+       ],
+       "InterfaceType": "interface",
+       "Ipv6Addresses": [],
+       "MacAddress": "0a:aa:aa:aa:aa:02",
+       "NetworkInterfaceId": "eni-db0000000000001",
+       "OwnerId": "123456789012",
+       "PrivateIpAddress": "10.0.1.20",
+       "PrivateIpAddresses": [
+        {
+         "Primary": true,
+         "PrivateIpAddress": "10.0.1.20"
+        }
+       ],
+       "SourceDestCheck": true,
+       "Status": "in-use",
+       "SubnetId": "subnet-tt0001",
+       "VpcId": "vpc-tt0001"
+      }
+     ],
+     "Placement": {
+      "AvailabilityZone": "us-east-1a",
+      "GroupName": "",
+      "Tenancy": "default"
+     },
+     "PrivateDnsName": "ip-10-0-1-20.ec2.internal",
+     "PrivateIpAddress": "10.0.1.20",
+     "ProductCodes": [],
+     "PublicDnsName": "",
+     "RootDeviceName": "/dev/sda1",
+     "RootDeviceType": "ebs",
+     "SecurityGroups": [
+      {
+       "GroupId": "sg-db0000000000001",
+       "GroupName": "db-tier"
+      }
+     ],
+     "SourceDestCheck": true,
+     "State": {
+      "Code": 16,
+      "Name": "running"
+     },
+     "StateTransitionReason": "",
+     "SubnetId": "subnet-tt0001",
+     "VirtualizationType": "hvm",
+     "VpcId": "vpc-tt0001"
+    }
+   ],
+   "OwnerId": "123456789012",
+   "ReservationId": "r-tt000000000000002"
+  }
+ ]
+}
