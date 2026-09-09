@@ -1,0 +1,22 @@
+This fixture is synthetic. It was hand-authored for the Inflight reachability
+test harness and does not represent output captured from a real AWS account.
+
+It models a single-instance web tier: one VPC, one subnet, one EC2 instance
+(i-web00000000000001), and one security group (sg-web000000000001) carrying
+two world-open ingress rules, each a single-port rule sourced from
+0.0.0.0/0:
+
+  - tcp/22  (SSH)  from 0.0.0.0/0  -- Checkov CKV_AWS_24 (open SSH)
+  - tcp/3389 (RDP) from 0.0.0.0/0  -- Checkov CKV_AWS_25 (open RDP)
+
+The SSH rule is declared first in IpPermissions (synthesized rule id
+sg-web000000000001-in-0-0.0.0.0/0) and the RDP rule second (synthesized rule
+id sg-web000000000001-in-1-0.0.0.0/0), per snapshot_describe's
+{sg_id}-in-{index}-{cidr} scheme. The field shapes were copied from the
+tests/fixtures/aws/two-tier fixture (itself derived from vendored real AWS
+describe-* output), then simplified and rewritten with fabricated
+identifiers, so it loads correctly under Inflight's describe-dir loader.
+Every VPC id, subnet id, instance id, security group id, ENI id, IP address,
+and account id in this fixture is fabricated for this purpose.
+
+Do not treat any value in this directory as real infrastructure.

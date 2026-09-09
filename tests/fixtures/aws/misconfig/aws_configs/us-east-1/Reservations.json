@@ -1,0 +1,108 @@
+{
+ "Reservations": [
+  {
+   "Groups": [],
+   "Instances": [
+    {
+     "AmiLaunchIndex": 0,
+     "Architecture": "x86_64",
+     "BlockDeviceMappings": [
+      {
+       "DeviceName": "/dev/sda1",
+       "Ebs": {
+        "AttachTime": "2026-01-01 00:00:00+00:00",
+        "DeleteOnTermination": true,
+        "Status": "attached",
+        "VolumeId": "vol-mc00000000000001"
+       }
+      }
+     ],
+     "CapacityReservationSpecification": {
+      "CapacityReservationPreference": "open"
+     },
+     "ClientToken": "",
+     "CpuOptions": {
+      "CoreCount": 1,
+      "ThreadsPerCore": 1
+     },
+     "EbsOptimized": false,
+     "EnaSupport": true,
+     "HibernationOptions": {
+      "Configured": false
+     },
+     "Hypervisor": "xen",
+     "ImageId": "ami-mc000000000000001",
+     "InstanceId": "i-web00000000000001",
+     "InstanceType": "t2.micro",
+     "KeyName": "misconfig-fixture",
+     "LaunchTime": "2026-01-01 00:00:00+00:00",
+     "Monitoring": {
+      "State": "disabled"
+     },
+     "NetworkInterfaces": [
+      {
+       "Attachment": {
+        "AttachTime": "2026-01-01 00:00:00+00:00",
+        "AttachmentId": "eni-attach-mc0000000000001",
+        "DeleteOnTermination": true,
+        "DeviceIndex": 0,
+        "Status": "attached"
+       },
+       "Description": "Primary network interface",
+       "Groups": [
+        {
+         "GroupId": "sg-web000000000001",
+         "GroupName": "web-tier"
+        }
+       ],
+       "InterfaceType": "interface",
+       "Ipv6Addresses": [],
+       "MacAddress": "0a:aa:aa:aa:aa:03",
+       "NetworkInterfaceId": "eni-web0000000000001",
+       "OwnerId": "123456789012",
+       "PrivateIpAddress": "10.0.2.10",
+       "PrivateIpAddresses": [
+        {
+         "Primary": true,
+         "PrivateIpAddress": "10.0.2.10"
+        }
+       ],
+       "SourceDestCheck": true,
+       "Status": "in-use",
+       "SubnetId": "subnet-mc0001",
+       "VpcId": "vpc-mc0001"
+      }
+     ],
+     "Placement": {
+      "AvailabilityZone": "us-east-1a",
+      "GroupName": "",
+      "Tenancy": "default"
+     },
+     "PrivateDnsName": "ip-10-0-2-10.ec2.internal",
+     "PrivateIpAddress": "10.0.2.10",
+     "ProductCodes": [],
+     "PublicDnsName": "",
+     "RootDeviceName": "/dev/sda1",
+     "RootDeviceType": "ebs",
+     "SecurityGroups": [
+      {
+       "GroupId": "sg-web000000000001",
+       "GroupName": "web-tier"
+      }
+     ],
+     "SourceDestCheck": true,
+     "State": {
+      "Code": 16,
+      "Name": "running"
+     },
+     "StateTransitionReason": "",
+     "SubnetId": "subnet-mc0001",
+     "VirtualizationType": "hvm",
+     "VpcId": "vpc-mc0001"
+    }
+   ],
+   "OwnerId": "123456789012",
+   "ReservationId": "r-mc0000000000000001"
+  }
+ ]
+}

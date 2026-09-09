@@ -54,3 +54,27 @@ def test_redundant_path_is_safe(tmp_path):
     model = _redundant_model()
     prof = Profile(W30, [FlowSpec(APP, DB, "tcp", 5432, 5)], anchor_dst=DB)
     assert _verdict(model, prof, "r1", tmp_path) is Verdict.SAFE  # r2 still permits the path
+
+
+MISCONFIG = "tests/fixtures/aws/misconfig"
+WEB = "i-web00000000000001"
+SSH_RULE = "sg-web000000000001-in-0-0.0.0.0/0"
+RDP_RULE = "sg-web000000000001-in-1-0.0.0.0/0"
+
+
+def test_partial_cidr_usage_blocks(tmp_path):
+    model = load_from_describe_dir(MISCONFIG, 90.0)
+    prof = Profile(W30, [FlowSpec("0.0.0.0/0", WEB, "tcp", 22, 3)], anchor_dst=WEB)
+    assert _verdict(model, prof, SSH_RULE, tmp_path) is Verdict.BLOCK
+
+
+def test_unused_open_ssh_is_safe(tmp_path):
+    model = load_from_describe_dir(MISCONFIG, 90.0)
+    prof = Profile(W30, [], anchor_dst=WEB)  # no SSH traffic over a full window
+    assert _verdict(model, prof, SSH_RULE, tmp_path) is Verdict.SAFE
+
+
+def test_used_open_rdp_blocks(tmp_path):
+    model = load_from_describe_dir(MISCONFIG, 90.0)
+    prof = Profile(W30, [FlowSpec("0.0.0.0/0", WEB, "tcp", 3389, 2)], anchor_dst=WEB)
+    assert _verdict(model, prof, RDP_RULE, tmp_path) is Verdict.BLOCK

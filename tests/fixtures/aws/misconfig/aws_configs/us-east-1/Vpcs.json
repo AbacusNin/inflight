@@ -1,0 +1,28 @@
+{
+ "Vpcs": [
+  {
+   "CidrBlock": "10.0.0.0/16",
+   "CidrBlockAssociationSet": [
+    {
+     "AssociationId": "vpc-cidr-assoc-mc00000000000001",
+     "CidrBlock": "10.0.0.0/16",
+     "CidrBlockState": {
+      "State": "associated"
+     }
+    }
+   ],
+   "DhcpOptionsId": "dopt-mc000001",
+   "InstanceTenancy": "default",
+   "IsDefault": false,
+   "OwnerId": "123456789012",
+   "State": "available",
+   "Tags": [
+    {
+     "Key": "Name",
+     "Value": "misconfig-vpc"
+    }
+   ],
+   "VpcId": "vpc-mc0001"
+  }
+ ]
+}
