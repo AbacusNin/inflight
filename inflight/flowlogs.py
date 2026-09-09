@@ -1,3 +1,4 @@
+import gzip
 import ipaddress
 
 from inflight.usage import resolve_flow_logs
@@ -151,3 +152,23 @@ def fetch_cloudwatch(session, log_group: str, start_ms: int, end_ms: int) -> lis
         token = resp.get("nextToken")
         if not token:
             return lines
+
+
+def fetch_s3(session, bucket: str, prefix: str, start_ms: int, end_ms: int) -> list:
+    s3 = session.client("s3")
+    lines, token = [], None
+    keys = []
+    while True:
+        kw = {"Bucket": bucket, "Prefix": prefix}
+        if token:
+            kw["ContinuationToken"] = token
+        resp = s3.list_objects_v2(**kw)
+        keys.extend(o["Key"] for o in resp.get("Contents", []))
+        token = resp.get("NextContinuationToken")
+        if not token:
+            break
+    for key in keys:
+        body = s3.get_object(Bucket=bucket, Key=key)["Body"].read()
+        text = gzip.decompress(body).decode("utf-8") if key.endswith(".gz") else body.decode("utf-8")
+        lines.extend(ln.strip() for ln in text.splitlines() if ln.strip())
+    return lines
