@@ -23,18 +23,39 @@ def _load_change(path: str) -> Change:
                   params=raw.get("params", {}))
 
 
-def main(argv: list[str] | None = None) -> int:
+def _default_session(region):
+    import boto3
+    return boto3.Session(region_name=region) if region else boto3.Session()
+
+
+def main(argv: list[str] | None = None, session=None) -> int:
     parser = _Parser(prog="inflight")
     sub = parser.add_subparsers(dest="command", required=True, parser_class=_Parser)
     ev = sub.add_parser("evaluate")
-    ev.add_argument("--snapshot", required=True)
+    ev.add_argument("--snapshot")
     ev.add_argument("--change", required=True)
+    ev.add_argument("--flow-logs")
+    ev.add_argument("--aws-vpc")
+    ev.add_argument("--window-days", type=float, default=90.0)
+    ev.add_argument("--region")
     ev.add_argument("--ledger")
     args = parser.parse_args(argv)
 
     try:
-        env = load_from_file(args.snapshot)
         change = _load_change(args.change)
+        if args.aws_vpc:
+            from inflight.snapshot_aws import load_from_aws
+            from inflight.flowlogs import load_usage_from_aws
+            sess = session or _default_session(args.region)
+            env = load_from_aws(sess, args.aws_vpc, args.window_days)
+            env = load_usage_from_aws(sess, env, args.window_days)
+        else:
+            if not args.snapshot:
+                parser.error("evaluate needs --snapshot or --aws-vpc")
+            env = load_from_file(args.snapshot)
+            if args.flow_logs:
+                from inflight.flowlogs import load_usage_from_file
+                env = load_usage_from_file(env, args.flow_logs)
         result = evaluate(env, change)
     except (OSError, KeyError, ValueError, TypeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
