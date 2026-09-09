@@ -3,7 +3,7 @@ import boto3
 from botocore.stub import Stubber
 from inflight.model import EnvironmentModel, Resource, Thresholds
 from inflight.flowlogs import (
-    load_usage_from_aws, effective_window_days, fields_from_format,
+    load_usage_from_aws, load_usage_from_file, effective_window_days, fields_from_format,
 )
 
 
@@ -83,3 +83,72 @@ def test_in_vpc_unresolved_destination_marks_usage_incomplete():
 
     m = load_usage_from_aws(session, _model(), 90.0, now=now)
     assert m.usage_complete is False
+
+
+def test_creation_time_as_real_datetime_does_not_crash():
+    # boto3/botocore return describe_flow_logs' CreationTime as a real
+    # datetime.datetime object (a "timestamp"-shaped field), never a string.
+    # A Stubber fixture that plants a raw string bypasses the wire-protocol
+    # parser and masks that; this plants an actual datetime so the regression
+    # (TypeError from creation_time.replace("Z", "+00:00")) is caught for real.
+    now = datetime(2026, 1, 10, tzinfo=timezone.utc)
+    flow_log = {"FlowLogId": "fl-1", "ResourceId": "vpc-1", "FlowLogStatus": "ACTIVE",
+                "LogDestinationType": "cloud-watch-logs", "LogGroupName": "fl-group",
+                "CreationTime": datetime(2026, 1, 7, tzinfo=timezone.utc)}
+    session = _stubbed_session(flow_log, [])
+
+    m = load_usage_from_aws(session, _model(), 90.0, now=now)
+    assert m.flow_logs_enabled is True
+    assert m.window_days == 3.0
+
+
+def test_effective_window_days_accepts_datetime_directly():
+    now = datetime(2026, 1, 10, tzinfo=timezone.utc)
+    started = datetime(2026, 1, 7, tzinfo=timezone.utc)
+    assert effective_window_days(started, 90.0, now) == 3.0
+
+
+def test_effective_window_days_treats_naive_datetime_as_utc():
+    now = datetime(2026, 1, 10, tzinfo=timezone.utc)
+    started = datetime(2026, 1, 7)  # naive, no tzinfo
+    assert effective_window_days(started, 90.0, now) == 3.0
+
+
+def test_effective_window_days_fails_closed_when_creation_time_unknown():
+    # an unknown coverage start must not be able to clear a not-used edge to
+    # safe by granting the full requested window (that was the old fail-open bug)
+    assert effective_window_days(None, 90.0) == 0.0
+
+
+def test_custom_log_format_routes_through_parse_custom_not_v2():
+    # a per-flow-log LogFormat must drive parse_custom with its own field order;
+    # routing it through parse_v2's fixed 14-field layout instead would either
+    # crash on the field-count mismatch or silently misassign columns
+    now = datetime(2026, 1, 10, tzinfo=timezone.utc)
+    custom_fmt = "${srcaddr} ${dstaddr} ${protocol} ${dstport} ${start} ${end} ${action} ${log-status}"
+    flow_log = {"FlowLogId": "fl-1", "ResourceId": "vpc-1", "FlowLogStatus": "ACTIVE",
+                "LogDestinationType": "cloud-watch-logs", "LogGroupName": "fl-group",
+                "CreationTime": "2025-01-01T00:00:00Z", "LogFormat": custom_fmt}
+    line = "10.0.1.10 10.0.1.20 6 5432 1690000000 1690000060 ACCEPT OK"
+    session = _stubbed_session(flow_log, [{"message": line}])
+
+    m = load_usage_from_aws(session, _model(), 90.0, now=now)
+    assert any(u.dst == "i-db" and u.protocol == "tcp" and u.port == 5432
+               for u in m.usage)
+
+
+def test_load_usage_from_file_populates_model(tmp_path):
+    lines = [
+        "2 123456789012 eni-1 10.0.1.10 10.0.1.20 40000 5432 6 10 840 "
+        "1690000000 1690086400 ACCEPT OK",
+    ]
+    path = tmp_path / "captured.log"
+    path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+    m = load_usage_from_file(_model(), str(path))
+
+    assert m.flow_logs_enabled is True
+    assert m.usage_complete is True
+    assert m.window_days == 1.0  # (1690086400 - 1690000000) / 86400
+    assert any(u.dst == "i-db" and u.protocol == "tcp" and u.port == 5432
+               for u in m.usage)

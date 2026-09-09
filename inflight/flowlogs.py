@@ -189,13 +189,19 @@ def _vpc_id_of(model) -> str:
     return ""
 
 
-def effective_window_days(creation_time: str, requested: float, now=None) -> float:
+def effective_window_days(creation_time: "str | datetime | None", requested: float, now=None) -> float:
     """The window the logs actually covered: min of the requested window and the
-    days since logging began. Catches the 'enabled yesterday' trap."""
+    days since logging began. Catches the 'enabled yesterday' trap. Fails closed
+    (0.0) when the coverage start is unknown, since an unknown start cannot be
+    trusted to clear a not-used edge to safe. boto3 hands back CreationTime as a
+    real datetime (a "timestamp"-shaped field), not a string, so both must parse."""
     if not creation_time:
-        return requested
+        return 0.0
     now = now or datetime.now(timezone.utc)
-    started = datetime.fromisoformat(creation_time.replace("Z", "+00:00"))
+    if isinstance(creation_time, datetime):
+        started = creation_time if creation_time.tzinfo else creation_time.replace(tzinfo=timezone.utc)
+    else:
+        started = datetime.fromisoformat(creation_time.replace("Z", "+00:00"))
     covered = (now - started).total_seconds() / 86400.0
     return min(requested, max(0.0, covered))
 
