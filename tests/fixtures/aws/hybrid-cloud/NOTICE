@@ -1,0 +1,14 @@
+This directory vendors a third-party test fixture.
+
+Source repository: https://github.com/batfish/pybatfish
+Commit SHA: 64e156224ce6bf0522dd0f9caf96a92174efd3b2
+Vendored path: jupyter_notebooks/networks/hybrid-cloud/aws_configs/
+License: Apache License 2.0
+
+The files under aws_configs/ are copied unmodified from the source commit above.
+They are a real AWS describe-* snapshot (SecurityGroups, Reservations,
+NetworkInterfaces, and other describe-* outputs) covering the us-east-2 and
+us-west-2 regions, used by pybatfish as a hybrid-cloud network example.
+
+See https://github.com/batfish/pybatfish/blob/master/LICENSE for the full
+Apache License 2.0 text.
