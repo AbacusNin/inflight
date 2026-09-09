@@ -16,7 +16,8 @@ def classify_edge(pre, post, edge, thresholds) -> Finding:
     if used:
         cls = Classification.LIVE_REDUNDANT if survives else Classification.LIVE_SOLE
         conf = "high"
-    elif pre.flow_logs_enabled and pre.window_days >= thresholds.window_days_high_confidence:
+    elif (pre.flow_logs_enabled and pre.window_days >= thresholds.window_days_high_confidence
+          and pre.usage_complete):
         cls, conf = Classification.DEAD, "high"
     else:
         cls, conf = Classification.DEAD_UNCERTAIN, "low"
@@ -25,6 +26,7 @@ def classify_edge(pre, post, edge, thresholds) -> Finding:
         "survives_post_change": survives,
         "window_days": pre.window_days,
         "flow_logs_enabled": pre.flow_logs_enabled,
+        "usage_complete": pre.usage_complete,
     }
     return Finding(edge=edge, classification=cls, confidence=conf, evidence=evidence)
 

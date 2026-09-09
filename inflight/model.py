@@ -53,6 +53,8 @@ class EnvironmentModel:
     window_days: float
     flow_logs_enabled: bool
     ip_to_resource: dict = field(default_factory=dict)
+    vpc_cidrs: dict = field(default_factory=dict)
+    usage_complete: bool = True
 
 
 @dataclass(frozen=True)

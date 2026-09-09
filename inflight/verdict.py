@@ -18,6 +18,10 @@ def decide(findings: list[Finding]) -> VerdictResult:
                 reasons.append(
                     f"needs review: {loc} has no usage evidence, flow logs are disabled, "
                     f"so it cannot be cleared ({f.evidence})")
+            elif not f.evidence.get("usage_complete", True):
+                reasons.append(
+                    f"needs review: {loc} looks unused but the usage map is incomplete, "
+                    f"so absence cannot be trusted ({f.evidence})")
             else:
                 reasons.append(
                     f"needs review: {loc} looks unused but the observation window is too short "

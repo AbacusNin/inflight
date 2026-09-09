@@ -19,4 +19,6 @@ def load_from_file(path: str) -> EnvironmentModel:
         window_days=raw["window_days"],
         flow_logs_enabled=raw["flow_logs_enabled"],
         ip_to_resource=raw.get("ip_to_resource", {}),
+        vpc_cidrs=raw.get("vpc_cidrs", {}),
+        usage_complete=raw.get("usage_complete", True),
     )
