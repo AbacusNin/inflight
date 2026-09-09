@@ -52,6 +52,8 @@ def normalize_batfish(raw: set, ip_map: dict) -> set:
 
 
 def run_differential(before_dir: str, change: Change, window_days: float = 90.0) -> dict:
+    """Apply change to the before snapshot and diff Inflight against Batfish, returning a dict
+    with in_scope_agreements, in_scope_mismatches, and out_of_scope_batfish_only key sets."""
     before = load_from_describe_dir(before_dir, window_days)
     probes = in_scope_probes(before)
     ip_map = ip_to_instance(before_dir)

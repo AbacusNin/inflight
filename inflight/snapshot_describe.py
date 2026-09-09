@@ -55,6 +55,11 @@ def _read_all(root: str, filename: str, key: str) -> list:
 
 
 def load_from_describe_dir(path: str, window_days: float) -> EnvironmentModel:
+    has_sg = glob.glob(os.path.join(path, "**", "SecurityGroups.json"), recursive=True)
+    has_res = glob.glob(os.path.join(path, "**", "Reservations.json"), recursive=True)
+    if not has_sg and not has_res:
+        raise FileNotFoundError(
+            f"no AWS describe-* snapshot under {path!r} (expected SecurityGroups.json / Reservations.json)")
     groups = _read_all(path, "SecurityGroups.json", "SecurityGroups")
     reservations = _read_all(path, "Reservations.json", "Reservations")
     enis = _read_all(path, "NetworkInterfaces.json", "NetworkInterfaces")

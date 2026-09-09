@@ -28,7 +28,8 @@ def differential_reachable_pairs(before_dir: str, after_dir: str,
 
 
 def _pairs_from_frame(frame) -> set:
-    """Extract (src_instance, dst_instance, protocol, port) from the answer frame."""
+    """Extract (ingress_node, dst_ip, protocol, port) from each Flow; the caller
+    resolves dst_ip to an instance."""
     pairs = set()
     for _idx, row in frame.iterrows():
         flow = row.get("Flow") if hasattr(row, "get") else row["Flow"]

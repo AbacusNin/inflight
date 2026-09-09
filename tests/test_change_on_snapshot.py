@@ -1,4 +1,3 @@
-import shutil
 from inflight.model import Change
 from inflight.snapshot_describe import load_from_describe_dir
 from harness.change_on_snapshot import write_after_dir
