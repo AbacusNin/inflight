@@ -1,5 +1,7 @@
 import gzip
 import ipaddress
+import re
+from datetime import datetime, timezone
 
 from inflight.usage import resolve_flow_logs
 
@@ -172,3 +174,72 @@ def fetch_s3(session, bucket: str, prefix: str, start_ms: int, end_ms: int) -> l
         text = gzip.decompress(body).decode("utf-8") if key.endswith(".gz") else body.decode("utf-8")
         lines.extend(ln.strip() for ln in text.splitlines() if ln.strip())
     return lines
+
+
+def fields_from_format(template: str) -> list:
+    """Turn a custom Flow Log format string ('${srcaddr} ${dstaddr} ...') into the
+    ordered field-name list parse_custom expects."""
+    return re.findall(r"\$\{([a-z0-9-]+)\}", template or "")
+
+
+def _vpc_id_of(model) -> str:
+    for r in model.resources.values():
+        if r.vpc_id:
+            return r.vpc_id
+    return ""
+
+
+def effective_window_days(creation_time: str, requested: float, now=None) -> float:
+    """The window the logs actually covered: min of the requested window and the
+    days since logging began. Catches the 'enabled yesterday' trap."""
+    if not creation_time:
+        return requested
+    now = now or datetime.now(timezone.utc)
+    started = datetime.fromisoformat(creation_time.replace("Z", "+00:00"))
+    covered = (now - started).total_seconds() / 86400.0
+    return min(requested, max(0.0, covered))
+
+
+def load_usage_from_aws(session, model, requested_window_days: float, now=None):
+    now = now or datetime.now(timezone.utc)
+    fls = discover_flow_logs(session, _vpc_id_of(model))
+    if not fls:
+        model.flow_logs_enabled = False
+        return model
+    start_ms = int((now.timestamp() - requested_window_days * 86400) * 1000)
+    end_ms = int(now.timestamp() * 1000)
+    records, started = [], None
+    for fl in fls:
+        if fl["destination_type"] == "cloud-watch-logs":
+            lines = fetch_cloudwatch(session, fl["log_group"], start_ms, end_ms)
+        else:
+            lines = fetch_s3(session, fl["bucket"], fl["prefix"], start_ms, end_ms)
+        fmt = fl.get("log_format")
+        records += parse_custom(lines, fields_from_format(fmt)) if fmt else parse_v2(lines)
+        if fl.get("creation_time"):
+            started = fl["creation_time"] if started is None else min(started, fl["creation_time"])
+    usage, complete = resolve_with_completeness(model, records)
+    model.usage = usage
+    model.flow_logs_enabled = True
+    model.window_days = effective_window_days(started, requested_window_days, now)
+    model.usage_complete = complete
+    return model
+
+
+def load_usage_from_file(model, path: str):
+    """Ingest captured Flow Log records from a file. Sets the window from the record
+    timestamps, so a short captured span degrades to low confidence exactly as a
+    short live window does, and cannot manufacture a false safe."""
+    with open(path, encoding="utf-8") as fh:
+        lines = [ln.strip() for ln in fh if ln.strip()]
+    records = parse_v2(lines)
+    usage, complete = resolve_with_completeness(model, records)
+    model.usage = usage
+    model.flow_logs_enabled = True
+    if records:
+        span = (max(r["end"] for r in records) - min(r["start"] for r in records)) / 86400.0
+        model.window_days = span
+    else:
+        model.window_days = 0.0
+    model.usage_complete = complete
+    return model
