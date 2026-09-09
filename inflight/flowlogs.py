@@ -1,3 +1,8 @@
+import ipaddress
+
+from inflight.usage import resolve_flow_logs
+
+
 def build_ip_to_resource(reservations: list, enis: list) -> dict:
     """Map every private and public IP of every instance and ENI to its resource
     id, so Flow Log destinations (which are IP addresses) can be matched to modeled
@@ -84,3 +89,28 @@ def parse_custom(lines: list, fields: list) -> list:
             "action": rec.get("action", "ACCEPT"),
         })
     return out
+
+
+def _in_vpc(ip: str, model) -> bool:
+    try:
+        addr = ipaddress.ip_address(ip)
+    except ValueError:
+        return False
+    for cidrs in model.vpc_cidrs.values():
+        for cidr in cidrs:
+            if addr in ipaddress.ip_network(cidr, strict=False):
+                return True
+    return False
+
+
+def resolve_with_completeness(model, records: list) -> tuple:
+    """Resolve raw Flow Log records against the model, and report whether the map
+    was complete for what was observed. A destination inside the modeled VPC space
+    that does not resolve to a known resource means a missing ENI, so usage may be
+    undercounted and absence can no longer be trusted."""
+    complete = True
+    for r in records:
+        if r["dstaddr"] not in model.ip_to_resource and _in_vpc(r["dstaddr"], model):
+            complete = False
+            break
+    return resolve_flow_logs(model, records), complete
