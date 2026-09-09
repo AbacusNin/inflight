@@ -39,6 +39,7 @@ def test_protocol_name_becomes_iana_number():
     assert line.split()[7] == "6"  # protocol field is the IANA number for tcp
 
 
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_generated_record_parses_under_flowlogs_reader():
     frr = pytest.importorskip("flowlogs_reader")
     model = load_from_describe_dir(TWO_TIER, 90.0)
