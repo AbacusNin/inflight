@@ -1,0 +1,6 @@
+{"Reservations": [
+  {"Instances": [{"InstanceId": "i-app", "VpcId": "vpc-1",
+    "SecurityGroups": [{"GroupId": "sg-app"}]}]},
+  {"Instances": [{"InstanceId": "i-db", "VpcId": "vpc-1",
+    "SecurityGroups": [{"GroupId": "sg-db"}]}]}
+]}
