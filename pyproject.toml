@@ -11,7 +11,7 @@ license-files = ["LICENSE"]
 dependencies = ["boto3>=1.43", "opentelemetry-sdk>=1.27"]
 
 [project.optional-dependencies]
-dev = ["pytest>=8", "pybatfish>=2024.0.0"]
+dev = ["pytest>=8", "pybatfish>=2024.0.0", "flowlogs-reader>=5"]
 
 [project.scripts]
 inflight = "inflight.gate.cli:main"

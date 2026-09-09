@@ -35,3 +35,42 @@ def vpc_cidrs_from(vpcs: list) -> dict:
             cidrs = [v["CidrBlock"]]
         out[v["VpcId"]] = cidrs
     return out
+
+
+_V2_FIELDS = ("version account-id interface-id srcaddr dstaddr srcport dstport "
+              "protocol packets bytes start end action log-status").split()
+
+
+def parse_v2(lines: list) -> list:
+    return parse_custom(lines, _V2_FIELDS)
+
+
+def parse_custom(lines: list, fields: list) -> list:
+    """Parse Flow Log lines given the field order. Drops NODATA/SKIPDATA rows and
+    portless (ICMP) rows; raises on a row whose field count does not match `fields`
+    so malformed input fails loud rather than yielding less usage."""
+    idx = {name: i for i, name in enumerate(fields)}
+    out = []
+    for line in lines:
+        line = line.strip()
+        if not line or line.split()[0] == "version":  # a header line
+            continue
+        parts = line.split()
+        if len(parts) != len(fields):
+            raise ValueError(f"flow log row has {len(parts)} fields, expected {len(fields)}")
+        rec = {name: parts[i] for name, i in idx.items()}
+        if rec.get("log-status", "OK") != "OK":
+            continue
+        dstport = rec.get("pkt-dstport") or rec.get("dstport", "-")
+        if not str(dstport).isdigit():
+            continue  # portless (ICMP) flow cannot match a port-scoped edge
+        out.append({
+            "srcaddr": rec.get("pkt-srcaddr") or rec["srcaddr"],
+            "dstaddr": rec.get("pkt-dstaddr") or rec["dstaddr"],
+            "protocol": rec["protocol"],
+            "dstport": int(dstport),
+            "start": int(rec["start"]),
+            "end": int(rec["end"]),
+            "action": rec.get("action", "ACCEPT"),
+        })
+    return out
