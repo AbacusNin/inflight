@@ -1,5 +1,5 @@
 from inflight.model import (
-    EnvironmentModel, Resource, SGRule, Change, Verdict, Thresholds,
+    EnvironmentModel, Resource, SGRule, Change, Verdict,
 )
 from inflight.engine import evaluate
 

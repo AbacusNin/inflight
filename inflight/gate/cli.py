@@ -66,7 +66,7 @@ def main(argv: list[str] | None = None, session=None) -> int:
         from inflight.ledger import Ledger
         Ledger(args.ledger).append({
             "timestamp": datetime.now(timezone.utc).isoformat(),
-            "snapshot": args.snapshot,
+            "snapshot": args.snapshot or f"aws-vpc:{args.aws_vpc}",
             "change": args.change,
             "verdict": result.verdict.value,
             "reasons": list(result.reasons),

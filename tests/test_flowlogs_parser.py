@@ -54,6 +54,7 @@ def _flowlogs_reader_available() -> bool:
 
 @pytest.mark.skipif(not _flowlogs_reader_available(),
                      reason="flowlogs-reader not installed/importable on this Python")
+@pytest.mark.filterwarnings("ignore::DeprecationWarning")
 def test_parse_v2_matches_flowlogs_reader():
     # Track a reference implementation: build its record from the same v2 line
     # and confirm our parser agrees on the fields the usage engine reads.

@@ -6,6 +6,13 @@ from inflight.change import apply_change
 from inflight.usage import is_used
 
 
+# VPC Flow Logs emit "-" for the port on portless protocols (ICMP), so the parser
+# drops those rows and usage.py can never see a flow for them. Absence of usage on
+# a non-observable protocol is not evidence of absence, so those edges can never
+# earn the high-confidence DEAD verdict on absence alone.
+_OBSERVABLE = {"tcp", "udp"}
+
+
 def affected_edges(pre: EnvironmentModel, change: Change) -> list[NetworkEdge]:
     return [e for e in permitted_edges(pre) if e.via_rule_id in change.rule_ids]
 
@@ -16,7 +23,8 @@ def classify_edge(pre, post, edge, thresholds) -> Finding:
     if used:
         cls = Classification.LIVE_REDUNDANT if survives else Classification.LIVE_SOLE
         conf = "high"
-    elif (pre.flow_logs_enabled and pre.window_days >= thresholds.window_days_high_confidence
+    elif (edge.protocol in _OBSERVABLE and pre.flow_logs_enabled
+          and pre.window_days >= thresholds.window_days_high_confidence
           and pre.usage_complete):
         cls, conf = Classification.DEAD, "high"
     else:
@@ -27,6 +35,7 @@ def classify_edge(pre, post, edge, thresholds) -> Finding:
         "window_days": pre.window_days,
         "flow_logs_enabled": pre.flow_logs_enabled,
         "usage_complete": pre.usage_complete,
+        "protocol": edge.protocol,
     }
     return Finding(edge=edge, classification=cls, confidence=conf, evidence=evidence)
 
