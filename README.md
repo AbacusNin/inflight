@@ -211,3 +211,14 @@ so it takes a month-long run rather than the lab's provision-and-destroy cycle.
 - IAM-diff and Terraform-plan gating on the same impact-then-verdict contract.
 - Strengthen the ledger from tamper-evident to tamper-resistant with a keyed
   signature or an external anchor.
+
+## License
+
+Apache License 2.0 with the Commons Clause. Anyone, including a company or a
+government agency, may use, change, and share Inflight free of charge, for
+example to gate changes to its own AWS accounts. Nobody may sell it, host it
+for a fee, or sell a product or service, including consulting or support, whose
+value comes entirely or substantially from it. This makes it source-available
+rather than OSI open source. See `LICENSE` and `NOTICE`.
+
+I'm not accepting outside contributions.

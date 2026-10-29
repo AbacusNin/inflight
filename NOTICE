@@ -1,0 +1,19 @@
+Inflight
+Copyright 2026 Abacus
+
+Licensed under the Apache License, Version 2.0, with the Commons Clause
+License Condition v1.0. See LICENSE.
+
+In plain terms: anyone, including a company or a government agency, may use,
+change, and share this software free of charge, for example to gate changes to
+its own AWS accounts. Nobody may sell it, host it for a fee, or sell a product
+or service, including consulting or support, whose value comes entirely or
+substantially from it. This summary does not replace LICENSE.
+
+Third-party material keeps its own terms. The Commons Clause does not apply to
+it.
+
+- tests/fixtures/aws/hybrid-cloud/aws_configs/: AWS describe-* output copied
+  unmodified from the pybatfish repository (github.com/batfish/pybatfish,
+  commit 64e15622), Apache License 2.0. Provenance:
+  tests/fixtures/aws/hybrid-cloud/NOTICE

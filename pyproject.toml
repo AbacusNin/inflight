@@ -6,8 +6,8 @@ build-backend = "setuptools.build_meta"
 name = "inflight"
 version = "0.1.0"
 requires-python = ">=3.14"
-license = "Apache-2.0"
-license-files = ["LICENSE"]
+license = "LicenseRef-Apache-2.0-with-Commons-Clause"
+license-files = ["LICENSE", "NOTICE"]
 dependencies = ["boto3>=1.43", "opentelemetry-sdk>=1.27"]
 
 [project.optional-dependencies]
