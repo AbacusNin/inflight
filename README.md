@@ -183,6 +183,24 @@ covers them.
 
 ## Roadmap
 
+### v1.1: run the SSM path on live AWS
+
+Deploy the Lambda gate and the SSM Automation document sketched in
+`docs/ssm-automation-adapter.md` into a live lab, run the automation against a
+proposed change, and confirm it stops before the remediation step whenever
+`allow` is false. Local emulators cannot run Automation runbooks, so this needs a
+real account. It turns the sketch into a tested integration.
+
+### v1.2: rerun the live lab with Flow Logs
+
+Enable VPC Flow Logs in `labs/live-aws/`, drive real traffic from the app tier to
+the database, and evaluate against the live VPC. The target is a `block` from a
+busy sole path and a `needs-review` from a window too short to trust, both decided
+from real Flow Logs on real AWS. A live `safe` needs 30 days of observed traffic,
+so it takes a month-long run rather than the lab's provision-and-destroy cycle.
+
+### Later
+
 - Model rule age, so a rule newer than the observation window is held for review
   rather than cleared as unused. AWS does not expose a per-rule creation time in the
   snapshot data today, so this needs a separate source.
