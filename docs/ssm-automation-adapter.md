@@ -2,8 +2,9 @@
 
 The gate runs as a pre-step in an SSM Automation document. `aws:invokeLambdaFunction`
 calls the Inflight handler with the proposed change, and `aws:branch` reads `allow`.
-When `allow` is false the automation stops before the remediation step. This path is
-validated on live AWS, because LocalStack does not execute Automation runbooks.
+When `allow` is false the automation stops before the remediation step. This path
+has not run on live AWS yet. It needs a real account to check, because LocalStack
+does not execute Automation runbooks. The Lambda handler itself is tested offline.
 
 Sketch:
 

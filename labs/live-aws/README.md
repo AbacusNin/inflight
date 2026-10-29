@@ -20,5 +20,6 @@ Against real AWS, the adapter reads the VPC's security groups (including the
 default self-referencing group), the app-to-db rule, and the instances, and
 returns `needs-review`: with no Flow Log usage wired in, it cannot prove a change
 safe, so it fails closed. This validates the live read path against the real EC2
-API. Real Flow Logs driving `block` and `safe` verdicts is the next increment (see
-the roadmap in the top-level README).
+API. This run predates Flow Log ingestion, which has since been built and tested
+offline. The lab has not been rerun with Flow Logs enabled. Until it is, `block` and
+`safe` verdicts from live Flow Logs remain unexercised against real AWS.
